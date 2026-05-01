@@ -1,5 +1,6 @@
 import { cloneDeep, cloneShallow, identity } from '@niche-works/utils';
 import { klona } from 'klona/full';
+import { isFunction } from 'remeda';
 import CursoredList from '../CursoredList';
 import type { TypedHistoryConfig } from './types';
 
@@ -36,7 +37,9 @@ export default class TypedHistory<EntryType = unknown> {
   constructor(config: TypedHistoryConfig<EntryType> = {}) {
     const { id, copyStrategy, initialEntries, maxLength } = config;
     this.id = id;
-    this._preprocess = COPY_STRATEGY[copyStrategy || 'deep'];
+    this._preprocess = isFunction(copyStrategy)
+      ? copyStrategy
+      : COPY_STRATEGY[copyStrategy || 'deep'];
     // カーソル0番目を「初期状態」として確保するため+1する
     this._maxLength = maxLength && maxLength > 0 ? maxLength + 1 : 0;
     this.init(initialEntries);
