@@ -1,4 +1,4 @@
-import { cloneDeep, cloneShallow, identity } from '@niche-works/utils';
+import { alwaysInput, cloneDeep, cloneShallow } from '@niche-works/utils';
 import { klona } from 'klona/full';
 import { isFunction } from 'remeda';
 import CursoredList from '../CursoredList';
@@ -7,7 +7,7 @@ import type { TypedHistoryConfig } from './types';
 const COPY_STRATEGY = {
   deep: cloneDeep,
   shallow: cloneShallow,
-  none: identity,
+  none: alwaysInput,
 } as const;
 
 /**
