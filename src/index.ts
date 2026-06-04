@@ -1,2 +1,2 @@
-export { default as HistoryHub } from './HistoryHub';
+export type * from './TypedHistory';
 export { default } from './TypedHistory';
