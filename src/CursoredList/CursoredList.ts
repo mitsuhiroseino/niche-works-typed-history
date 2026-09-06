@@ -1,21 +1,23 @@
-import type { CursoredListConfig } from './types';
+import type { AtBoundary, CursoredListConfig } from './types';
 
 /**
  * カーソル付きのリスト
  * 下記を行う
  *
  * - エントリーの追加（カーソル以降の切り捨て・最大長の超過分削除）
- * - カーソルの前後移動
+ * - カーソルの前後移動（atBoundaryの設定により、移動できない場合の戻り値を変更可能）
  * - エントリーの読み取り
  */
 export default class CursoredList<T = unknown> {
   private _entries: T[] = [];
   private _cursor: number = -1;
   private readonly _maxLength: number;
+  private readonly _atBoundary: AtBoundary;
 
   constructor(config: CursoredListConfig = {}) {
-    const { maxLength } = config;
+    const { maxLength, atBoundary } = config;
     this._maxLength = maxLength != null && maxLength > 0 ? maxLength : 0;
+    this._atBoundary = atBoundary || 'current';
   }
 
   get length(): number {
@@ -40,7 +42,8 @@ export default class CursoredList<T = unknown> {
 
   /**
    * カーソル以降のエントリーを切り捨ててから追加する。
-   * maxLength超過時は先頭から削除し、カーソルを補正する。
+   * maxLength超過時は先頭から削除する。
+   * カーソルは常に追加したエントリー（末尾）を指す。
    */
   append(entry: T): void {
     if (this._cursor < this._entries.length - 1) {
@@ -55,7 +58,6 @@ export default class CursoredList<T = unknown> {
       // エントリー数の上限に達しているなら前の方から削除
       const excess = this._entries.length - this._maxLength;
       this._entries = this._entries.slice(excess);
-      this._cursor = Math.max(0, this._cursor - excess);
     }
 
     // 現在のカーソル位置を設定
@@ -64,22 +66,26 @@ export default class CursoredList<T = unknown> {
 
   /**
    * カーソルを1つ後退させ、移動後の要素を返す。
-   * 移動できない場合は現在の要素を返す
+   * 移動できない場合はatBoundaryの設定に従う
    */
-  backward(): T {
+  backward(): T | undefined {
     if (this.hasPrevious) {
       this._cursor--;
+    } else if (this._atBoundary === 'none') {
+      return undefined;
     }
     return this._entries[this._cursor];
   }
 
   /**
    * カーソルを1つ前進させ、移動後の要素を返す。
-   * 移動できない場合は現在の要素を返す
+   * 移動できない場合はatBoundaryの設定に従う
    */
-  forward(): T {
+  forward(): T | undefined {
     if (this.hasNext) {
       this._cursor++;
+    } else if (this._atBoundary === 'none') {
+      return undefined;
     }
     return this._entries[this._cursor];
   }

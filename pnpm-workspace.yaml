@@ -1,0 +1,7 @@
+allowBuilds:
+  '@parcel/watcher': false
+  esbuild: true
+minimumReleaseAgeExclude:
+  - '@niche-works/constants@0.2.0'
+  - '@niche-works/types@0.4.0'
+  - '@niche-works/utils@0.5.0'

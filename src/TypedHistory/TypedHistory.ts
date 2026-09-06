@@ -25,23 +25,22 @@ export default class TypedHistory<EntryType = unknown> {
   private _entries: CursoredList<EntryType>;
 
   /**
-   * 最大エントリー数
-   */
-  private _maxLength: number;
-
-  /**
    * 前処理
    */
   private _preprocess: (entry: EntryType) => EntryType;
 
   constructor(config: TypedHistoryConfig<EntryType> = {}) {
-    const { id, copyStrategy, initialEntries, maxLength } = config;
+    const { id, copyStrategy, initialEntries, maxLength, atBoundary } = config;
     this.id = id;
     this._preprocess = isFunction(copyStrategy)
       ? copyStrategy
       : COPY_STRATEGY[copyStrategy || 'deep'];
     // カーソル0番目を「初期状態」として確保するため+1する
-    this._maxLength = maxLength && maxLength > 0 ? maxLength + 1 : 0;
+    this._entries = new CursoredList({
+      maxLength: maxLength && maxLength > 0 ? maxLength + 1 : 0,
+      // undo/redoが実行できたかどうかをundefinedの有無で判別できるようにする
+      atBoundary: atBoundary || 'none',
+    });
     this.init(initialEntries);
   }
 
@@ -55,7 +54,7 @@ export default class TypedHistory<EntryType = unknown> {
   }
 
   clear() {
-    this._entries = new CursoredList({ maxLength: this._maxLength });
+    this._entries.clear();
   }
 
   get length() {
@@ -79,20 +78,14 @@ export default class TypedHistory<EntryType = unknown> {
   }
 
   redo(): EntryType | undefined {
-    if (this.canRedo()) {
-      const entry = this._entries.forward();
-      return entry;
-    }
+    return this._entries.forward();
   }
 
   undo(): EntryType | undefined {
-    if (this.canUndo()) {
-      const entry = this._entries.backward();
-      return entry;
-    }
+    return this._entries.backward();
   }
 
-  spapshot(): EntryType | undefined {
+  snapshot(): EntryType | undefined {
     return klona(this._entries.current);
   }
 }

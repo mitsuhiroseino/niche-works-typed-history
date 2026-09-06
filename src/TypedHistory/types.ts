@@ -1,30 +1,28 @@
-export type TypedHistoryConfig<EntryType extends unknown = unknown> = {
-  /**
-   * 識別子
-   */
-  id?: string;
+import type { CursoredListConfig } from '../CursoredList';
 
-  /**
-   * エントリーの初期状態
-   */
-  initialEntries?: EntryType[];
+export type TypedHistoryConfig<EntryType extends unknown = unknown> =
+  CursoredListConfig & {
+    /**
+     * 識別子
+     */
+    id?: string;
 
-  /**
-   * エントリーを保持する際のコピー方法
-   *
-   * - 'deep': ディープコピーして保持
-   * - 'shallow': シャローコピーして保持
-   * - 'none': そのまま保持
-   * - 関数: 関数の戻り値を保持
-   */
-  copyStrategy?:
-    | 'deep'
-    | 'shallow'
-    | 'none'
-    | ((entry: EntryType) => EntryType);
+    /**
+     * エントリーの初期状態
+     */
+    initialEntries?: EntryType[];
 
-  /**
-   * エントリーの最大保持数
-   */
-  maxLength?: number;
-};
+    /**
+     * エントリーを保持する際のコピー方法
+     *
+     * - 'deep': ディープコピーして保持
+     * - 'shallow': シャローコピーして保持
+     * - 'none': そのまま保持
+     * - 関数: 関数の戻り値を保持
+     */
+    copyStrategy?:
+      | 'deep'
+      | 'shallow'
+      | 'none'
+      | ((entry: EntryType) => EntryType);
+  };
