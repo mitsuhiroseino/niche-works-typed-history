@@ -65,6 +65,10 @@ export default class TypedHistory<EntryType = unknown> {
     return this._entries.cursor;
   }
 
+  get current(): EntryType | undefined {
+    return this._entries.current;
+  }
+
   push(entry: EntryType) {
     this._entries.append(this._preprocess(entry));
   }

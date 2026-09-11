@@ -28,18 +28,12 @@ export default defineConfig({
       content: {
         main: './index.cjs',
         module: './index.mjs',
+        types: './index.d.mts',
         exports: {
           '.': {
             import: './index.mjs',
             require: './index.cjs',
-          },
-          './HistoryHub': {
-            import: './HistoryHub/index.mjs',
-            require: './HistoryHub/index.cjs',
-          },
-          './types': {
-            import: './types.mjs',
-            require: './types.cjs',
+            type: './index.d.mts',
           },
         },
       },
